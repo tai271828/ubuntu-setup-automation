@@ -1,0 +1,53 @@
+#!/bin/bash
+
+#set -e
+set +x
+
+MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-old-releases.ubuntu.com}
+MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
+MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
+
+function usage() {
+  local usage="Usage: `basename $0` <release> [-t server_desktop_type]"
+  echo $usage
+}
+
+RELEASE=$1
+shift
+if [[ -z "$RELEASE" ]]; then
+  echo "Please input release number"
+  echo $usage
+  #exit
+fi
+
+while [[ $# -gt 0  ]]
+do
+  local key="$1"
+  case $key in
+    -y|--release-type)
+    RELEASE_TYPE="$2"
+    shift
+    ;;
+    -h|--help)
+    help="1"
+    ;;
+  esac
+  # past argument or value
+  shift
+done
+
+if [[ -n "$help" ]]; then
+  usage
+  exit
+fi
+
+if [[ -z "$RELEASE_TYPE" ]]; then
+  RELEASE_TYPE="desktop"
+fi
+
+iso_download_url=${MIRROR_PREFIX}/${RELEASE}/ubuntu-${RELEASE}-${RELEASE_TYPE}-amd64.iso
+
+temp=$(mktemp)
+echo "Begin to download image"
+wget -q -O $temp $iso_download_url
+echo "Done"
