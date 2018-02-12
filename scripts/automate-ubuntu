@@ -1,11 +1,17 @@
 #!/bin/bash
 
 #set -e
-set +x
+set -x
 
 MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-releases.ubuntu.com}
 MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
 MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
+
+DEFAULT_RELEASE="14.04.5"
+DEFAULT_TYPE="desktop"
+DEFAULT_ARCHITECTURE="amd64"
+
+DATA_DIR="$(dirname $(dirname $0))/data"
 
 PATH=$(dirname $0):$PATH
 
@@ -13,6 +19,19 @@ function usage() {
   local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch]"
   echo $usage
   exit
+}
+
+function patch_iso() {
+  # patch iso so it could automate grub and preseed
+  cp ${DATA_DIR}/txt.cfg ${tempd}/${iso_prefix}/isolinux/txt.cfg
+  cp ${DATA_DIR}/patch.preseed ${tempd}/${iso_prefix}/preseed/
+}
+
+function rebuild_iso() {
+  # rebuild an iso from the extracted data
+  local iso_extract="${tempd}/${iso_prefix}"
+  local isolinux_dir="${iso_extract}/isolinux"
+  mkisofs -D -r -V "UNATTENDED_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${tempd}/ubuntu16-desktop-unattended-install.iso ${iso_extract}
 }
 
 while [[ $# -gt 0  ]]; do
@@ -44,20 +63,20 @@ if [[ -n "$help" ]]; then
 fi
 
 if [[ -z "$RELEASE" ]]; then
-  RELEASE="14.04.5"
+  RELEASE=${DEFAULT_RELEASE}
 fi
 
 if [[ -z "$RELEASE_TYPE" ]]; then
-  RELEASE_TYPE="desktop"
+  RELEASE_TYPE=${DEFAULT_TYPE}
 fi
 
 if [[ -z "$RELEASE_ARCH" ]]; then
   RELEASE_ARCH="amd64"
 fi
 
-iso_suffix="ubuntu-${RELEASE}-${RELEASE_TYPE}-${RELEASE_ARCH}"
+iso_prefix="ubuntu-${RELEASE}-${RELEASE_TYPE}-${RELEASE_ARCH}"
 iso_ext="iso"
-iso_name="${iso_suffix}.${iso_ext}"
+iso_name="${iso_prefix}.${iso_ext}"
 iso_download_url=${MIRROR_PREFIX}/${RELEASE}/${iso_name}
 
 tempd=$(mktemp -d /tmp/automatic-ubuntu-XXXXXX)
@@ -65,9 +84,20 @@ echo "Begin to download image to $tempd"
 wget -O $tempd/${iso_name} $iso_download_url
 if [[ "$?" -ne 0 ]]; then
   echo "Failed to download the image from ${iso_download_url}"
-else
-  echo "${iso_download_url} is downloaded under ${tempd}"
-  mkdir -p ${tempd}/${iso_suffix}
-  extract-iso ${tempd}/${iso_name} -d ${tempd}/${iso_suffix}
-  echo "Done"
+  exit
 fi
+echo "${iso_download_url} is downloaded under ${tempd}"
+
+echo "Begin to patch the image"
+
+echo "Extracting data..."
+mkdir -p ${tempd}/${iso_prefix}
+extract-iso ${tempd}/${iso_name} -d ${tempd}/${iso_prefix}
+
+echo "Patching..."
+patch_iso
+
+echo "Re-generate the iso"
+rebuild_iso
+
+echo "Done. Your new image is ${tempd}/ubuntu16-desktop-unattended-install.iso"
