@@ -7,6 +7,8 @@ MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-releases.ubuntu.com}
 MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
 MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
 
+PATH=$(dirname $0):$PATH
+
 function usage() {
   local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch]"
   echo $usage
@@ -53,15 +55,19 @@ if [[ -z "$RELEASE_ARCH" ]]; then
   RELEASE_ARCH="amd64"
 fi
 
-iso_name="ubuntu-${RELEASE}-${RELEASE_TYPE}-${RELEASE_ARCH}.iso"
-iso_download_url=${MIRROR_PREFIX}/${RELEASE}/$iso_name
+iso_suffix="ubuntu-${RELEASE}-${RELEASE_TYPE}-${RELEASE_ARCH}"
+iso_ext="iso"
+iso_name="${iso_suffix}.${iso_ext}"
+iso_download_url=${MIRROR_PREFIX}/${RELEASE}/${iso_name}
 
-temp=$(mktemp -d)
-echo "Begin to download image to $temp"
-wget -O $temp/${iso_name} $iso_download_url
+tempd=$(mktemp -d /tmp/automatic-ubuntu-XXXXXX)
+echo "Begin to download image to $tempd"
+wget -O $tempd/${iso_name} $iso_download_url
 if [[ "$?" -ne 0 ]]; then
   echo "Failed to download the image from ${iso_download_url}"
 else
-  echo "${iso_download_url} is downloaded under ${temp}"
+  echo "${iso_download_url} is downloaded under ${tempd}"
+  mkdir -p ${tempd}/${iso_suffix}
+  extract-iso ${tempd}/${iso_name} -d ${tempd}/${iso_suffix}
   echo "Done"
 fi
