@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#set -e
-set -x
-
 MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-releases.ubuntu.com}
 MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
 MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
@@ -31,7 +28,11 @@ function rebuild_iso() {
   # rebuild an iso from the extracted data
   local iso_extract="${tempd}/${iso_prefix}"
   local isolinux_dir="${iso_extract}/isolinux"
-  mkisofs -D -r -V "UNATTENDED_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${tempd}/ubuntu16-desktop-unattended-install.iso ${iso_extract}
+  mkisofs -D -r -V "UNATTENDED_UBUNTU" -cache-inodes -J -l \
+          -b isolinux/isolinux.bin -c isolinux/boot.cat \
+          -no-emul-boot -boot-load-size 4 -boot-info-table \
+          -o ${tempd}/ubuntu16-desktop-unattended-install.iso \
+          ${iso_extract}
 }
 
 while [[ $# -gt 0  ]]; do
