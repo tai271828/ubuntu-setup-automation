@@ -1,5 +1,12 @@
 #!/bin/bash
-
+#
+#
+# This script will download a stock Ubuntu and make it
+# be able to automatically install by its associated preseed.
+#
+# Use -v to invoke quiet mode. This is useful for scripting.
+#
+#
 MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-releases.ubuntu.com}
 MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
 MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
@@ -8,12 +15,14 @@ DEFAULT_RELEASE="14.04.5"
 DEFAULT_TYPE="desktop"
 DEFAULT_ARCHITECTURE="amd64"
 
-DATA_DIR="$(dirname $(dirname $0))/data"
+VERBOSE=true
+
+DATA_DIR="$(dirname $(dirname $0))/../data"
 
 PATH=$(dirname $0):$PATH
 
 function usage() {
-  local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch]"
+  local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch] [-q quiet]"
   echo $usage
   exit
 }
@@ -31,8 +40,14 @@ function rebuild_iso() {
   mkisofs -D -r -V "UNATTENDED_UBUNTU" -cache-inodes -J -l \
           -b isolinux/isolinux.bin -c isolinux/boot.cat \
           -no-emul-boot -boot-load-size 4 -boot-info-table \
-          -o ${tempd}/ubuntu16-desktop-unattended-install.iso \
-          ${iso_extract}
+          -o ${tempd}/${iso_prefix}-unattended.iso \
+          ${iso_extract} > /dev/null 2>&1
+}
+
+function echo_message() {
+  if [[ ${VERBOSE} = true ]]; then
+    echo $1
+  fi
 }
 
 while [[ $# -gt 0  ]]; do
@@ -48,6 +63,10 @@ while [[ $# -gt 0  ]]; do
     ;;
     -a|--arch)
     RELEASE_ARCH="$2"
+    shift
+    ;;
+    -q|--quiet)
+    VERBOSE=false
     shift
     ;;
     -h|--help)
@@ -81,24 +100,25 @@ iso_name="${iso_prefix}.${iso_ext}"
 iso_download_url=${MIRROR_PREFIX}/${RELEASE}/${iso_name}
 
 tempd=$(mktemp -d /tmp/automatic-ubuntu-XXXXXX)
-echo "Begin to download image to $tempd"
-wget -O $tempd/${iso_name} $iso_download_url
+echo_message "Begin to download image to $tempd"
+wget -q -O $tempd/${iso_name} $iso_download_url
 if [[ "$?" -ne 0 ]]; then
-  echo "Failed to download the image from ${iso_download_url}"
+  echo_message "Failed to download the image from ${iso_download_url}"
   exit
 fi
-echo "${iso_download_url} is downloaded under ${tempd}"
+echo_message "${iso_download_url} is downloaded under ${tempd}"
 
-echo "Begin to patch the image"
+echo_message "Begin to patch the image"
 
-echo "Extracting data..."
+echo_message "Extracting data..."
 mkdir -p ${tempd}/${iso_prefix}
 extract-iso ${tempd}/${iso_name} -d ${tempd}/${iso_prefix}
 
-echo "Patching..."
+echo_message "Patching..."
 patch_iso
 
-echo "Re-generate the iso"
+echo_message "Re-generate the iso"
 rebuild_iso
 
-echo "Done. Your new image is ${tempd}/ubuntu16-desktop-unattended-install.iso"
+echo_message "Done. Your new image is"
+echo "${tempd}/${iso_prefix}-unattended.iso"

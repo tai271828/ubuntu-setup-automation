@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# This script will prepare a iso and a qcow disk image
+# so you could use these two files to create an
+# kvm instance
+#
+
+set +x
+
+readonly VIRTLIB_IMAGE_ROOT_PATH="/var/lib/libvirt/images"
+PATH=$(dirname $0):${PATH}
+
+# automate an Ubuntu iso, returning the absolute path of the iso
+echo "Fetching the iso..."
+PATH_ISO="`automate-ubuntu -q`"
+readonly PATH_ISO
+ISO_NAME="`basename ${PATH_ISO}`"
+ISO_PREFIX="${ISO_NAME%.*}"
+#ISO_EXT="${ISO_NAME##*.}"
+readonly ISO_NAME
+readonly ISO_PREFIX
+#readonly ISO_EXT
+VDA_QCOW2="${ISO_PREFIX}.qcow2"
+readonly VDA_QCOW2
+
+cp ${PATH_ISO} ${VIRTLIB_IMAGE_ROOT_PATH}
+echo "Fetching the iso... Done"
+echo "You iso is ${VIRTLIB_IMAGE_ROOT_PATH}/${ISO_NAME}"
+
+rm -f ${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2}
+dd if=/dev/zero of=${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2} bs=1M count=15360 status=progress
+echo "Your qcow2 disk is ${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2}"
