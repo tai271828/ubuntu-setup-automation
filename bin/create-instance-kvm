@@ -28,14 +28,14 @@ xmlconfig = """
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type='file' device='disk'>
             <driver name='qemu' type='raw'/>
-            <source file='/var/lib/libvirt/images/ubuntu-14.04.5-desktop-unattended-installation.qcow2'/>
+            <source file='/var/lib/libvirt/images/ubuntu-14.04.5-desktop-amd64-unattended.qcow2'/>
             <backingStore/>
             <target dev='vda' bus='virtio'/>
             <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
         </disk>
         <disk type='file' device='cdrom'>
             <driver name='qemu' type='raw'/>
-            <source file='/var/lib/libvirt/images/ubuntu-14.04.5-desktop-unattended-installation.iso'/>
+            <source file='/var/lib/libvirt/images/ubuntu-14.04.5-desktop-amd64-unattended.iso'/>
             <backingStore/>
             <target dev='hda' bus='ide'/>
             <readonly/>
