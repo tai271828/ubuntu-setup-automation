@@ -22,7 +22,7 @@ DATA_DIR="$(dirname $(dirname $0))/../data"
 PATH=$(dirname $0):$PATH
 
 function usage() {
-  local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch] [-q quiet]"
+  local usage="Usage: `basename $0` [-r release] [-t server_desktop_type] [-a arch] [-c cache] [-q quiet]"
   echo $usage
   exit
 }
@@ -65,6 +65,11 @@ while [[ $# -gt 0  ]]; do
     RELEASE_ARCH="$2"
     shift
     ;;
+    -c|--cache)
+    CACHE=$2
+    readonly CACHE
+    shift
+    ;;
     -q|--quiet)
     VERBOSE=false
     shift
@@ -99,14 +104,19 @@ iso_ext="iso"
 iso_name="${iso_prefix}.${iso_ext}"
 iso_download_url=${MIRROR_PREFIX}/${RELEASE}/${iso_name}
 
-tempd=$(mktemp -d /tmp/automatic-ubuntu-XXXXXX)
-echo_message "Begin to download image to $tempd"
-wget -q -O $tempd/${iso_name} $iso_download_url
-if [[ "$?" -ne 0 ]]; then
-  echo_message "Failed to download the image from ${iso_download_url}"
-  exit
+if [[ -f "$CACHE" ]]; then
+  echo_message "Try to use $CACHE"
+  tempd=$(dirname $CACHE)
+else
+  tempd=$(mktemp -d /tmp/automatic-ubuntu-XXXXXX)
+  echo_message "Begin to download image to $tempd"
+  wget -q -O $tempd/${iso_name} $iso_download_url
+  if [[ "$?" -ne 0 ]]; then
+    echo_message "Failed to download the image from ${iso_download_url}"
+    exit
+  fi
+  echo_message "${iso_download_url} is downloaded under ${tempd}"
 fi
-echo_message "${iso_download_url} is downloaded under ${tempd}"
 
 echo_message "Begin to patch the image"
 
