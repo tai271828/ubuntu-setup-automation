@@ -121,7 +121,17 @@ fi
 echo_message "Begin to patch the image"
 
 echo_message "Extracting data..."
-mkdir -p ${tempd}/${iso_prefix}
+# Remove the temp working dir to refresh the updated files of the iso
+# when using cache option. This feature is useful for development
+# of new preseed files
+if [[ -d "${tempd}/${iso_prefix}" ]]; then
+  echo_message "Refreshing ${tempd}/${iso_prefix} ..."
+  rm -rf ${tempd}/${iso_prefix}
+  mkdir -p ${tempd}/${iso_prefix}
+else
+  mkdir -p ${tempd}/${iso_prefix}
+fi
+
 extract-iso ${tempd}/${iso_name} -d ${tempd}/${iso_prefix}
 
 echo_message "Patching..."
