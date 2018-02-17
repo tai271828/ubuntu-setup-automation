@@ -111,12 +111,9 @@ print("Created a domain instance.")
 
 print("Try to get the ethernet IP of the guest os")
 
-count_timeout = 3
-count = 0
-while (count < count_timeout):
-    uptime = 180 # sec
-    print("Wait for the provision of the system for %i seconds " % uptime)
-    time.sleep(180)
+count_timeout = 54
+count = 1
+while (count < count_timeout + 1):
     try:
         ins_ifa = instance.interfaceAddresses
         iface_addrs = ins_ifa(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT, 0)
@@ -126,6 +123,9 @@ while (count < count_timeout):
             print("Too many tries. Give up.")
         else:
             print("The system is not ready. Waiting againt.")
+    uptime = 10 # sec
+    print("Wait for the provision of the system for %i seconds ( %i / %i ) " % (uptime, count, count_timeout))
+    time.sleep(uptime)
     count += 1
 
 guest_addrs = []
