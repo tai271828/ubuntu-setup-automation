@@ -36,10 +36,17 @@ xmlconfig = """
         </disk>
         <disk type='file' device='cdrom'>
             <driver name='qemu' type='raw'/>
+            <source file='/var/lib/libvirt/images/my-seed.img'/>
+            <backingStore/>
+            <target dev='hdb' bus='ide'/>
+            <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+            <on_reboot>destroy</on_reboot>
+        </disk>
+        <disk type='file' device='cdrom'>
+            <driver name='qemu' type='raw'/>
             <source file='/var/lib/libvirt/images/ubuntu-14.04.5-desktop-amd64-unattended.iso'/>
             <backingStore/>
             <target dev='hda' bus='ide'/>
-            <readonly/>
             <alias name='ide0-0-0'/>
             <address type='drive' controller='0' bus='0' target='0' unit='0'/>
             <on_reboot>destroy</on_reboot>

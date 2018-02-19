@@ -60,7 +60,9 @@ ubiquity ubiquity/success_command string \
   sed -i -e 's/dns=dnsmasq/#dns=dnsmasq/' /target/etc/NetworkManager/NetworkManager.conf ;\
   cp -a /cdrom/scripts/ /target/root/ ;\
   cp -a /cdrom/salt/ /target/root/ ;\
-  in-target apt-get install -y --force-yes openssh-server; \
+  in-target apt-get install -y --force-yes ssh; \
+  in-target apt-get install -y --force-yes qemu-guest-agent; \
+  in-target apt-get install -y --force-yes cloud-init; \
   in-target apt-get install -y --force-yes vim; \
   sleep 15; \
   true
