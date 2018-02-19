@@ -1,0 +1,12 @@
+#cloud-config
+password: passw0rd
+chpasswd: { expire: False }
+ssh_pwauth: True
+
+ssh_authorized_keys:
+ - @@my_ssh_public_key@@ 
+
+timezone: Asia/Taipei
+
+bootcmd:
+ - git clone https://github.com/solvcon/solvcon.git
