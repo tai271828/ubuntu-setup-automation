@@ -63,6 +63,7 @@ ubiquity ubiquity/success_command string \
   in-target apt-get install -y --force-yes ssh; \
   in-target apt-get install -y --force-yes qemu-guest-agent; \
   in-target apt-get install -y --force-yes cloud-init; \
+  in-target apt-get install -y --force-yes git; \
   in-target apt-get install -y --force-yes vim; \
   sleep 15; \
   true
