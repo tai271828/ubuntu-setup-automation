@@ -25,8 +25,8 @@ d-i console-setup/ask_detect boolean false
 d-i console-setup/layoutcode string us
 
 # Network
-d-i netcfg/get_hostname string ubuntu
-d-i netcfg/get_domain string unassigned-domain
+d-i netcfg/get_hostname string solvcon-master
+d-i netcfg/get_domain string solvcon-domain
 d-i netcfg/choose_interface select auto
 
 # Clock
@@ -44,10 +44,14 @@ d-i apt-setup/universe boolean true
 # Users
 d-i passwd/user-fullname string Ubuntu
 d-i passwd/username string ubuntu
-d-i passwd/user-password-crypted password $1$NxGTHVE/$NX4GcXv76Xorum3DFgx53/
+d-i passwd/user-password password CouldBeOverriddenByCloudInit
+d-i passwd/user-password-again password CouldBeOverriddenByCloudInit
+d-i passwd/auto-login boolean True
+# a known password that has been crypted (md5 hash)
+# mkpasswd -m md5
+#d-i passwd/user-password-crypted password $1$IsdpbX58$TMcExxuhr3jSNW4uLCESD.
 d-i passwd/user-default-groups string adm audio cdrom dip lpadmin sudo plugdev sambashare video
 d-i passwd/root-login boolean true
-#d-i passwd/root-password-crypted password insecure
 d-i user-setup/allow-password-weak boolean true
 
 # Grub
@@ -63,6 +67,7 @@ ubiquity ubiquity/success_command string \
   in-target apt-get install -y --force-yes ssh; \
   in-target apt-get install -y --force-yes qemu-guest-agent; \
   in-target apt-get install -y --force-yes cloud-init; \
+  in-target apt-get install -y --force-yes git; \
   in-target apt-get install -y --force-yes vim; \
   sleep 15; \
   true

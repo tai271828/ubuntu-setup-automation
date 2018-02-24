@@ -28,5 +28,5 @@ echo "Fetching the iso... Done"
 echo "You iso is ${VIRTLIB_IMAGE_ROOT_PATH}/${ISO_NAME}"
 
 rm -f ${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2}
-dd if=/dev/zero of=${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2} bs=1M count=15360 status=progress
+qemu-img create ${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2} 15G
 echo "Your qcow2 disk is ${VIRTLIB_IMAGE_ROOT_PATH}/${VDA_QCOW2}"
