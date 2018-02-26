@@ -9,9 +9,5 @@ ssh_authorized_keys:
 timezone: Asia/Taipei
 
 runcmd:
- - echo "TaiCloudInitBootCmd" >> /var/log/tai.log
- - ls / >> /var/log/tai.log
- - ls /home >> /var/log/tai.log
- - su - ubuntu -c 'git clone https://github.com/solvcon/solvcon.git $HOME/solvcon' >> /var/log/tai.log 2>&1
- - su - ubuntu -c 'wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /home/ubuntu/miniconda.sh'
- - su - ubuntu -c 'bash $HOME/miniconda.sh -b -p $HOME/miniconda'
+ - chmod 777 bash /var/lib/cloud/instances/iid-local01/scripts/init_solvcon.sh
+ - su - ubuntu -c 'bash /var/lib/cloud/instances/iid-local01/scripts/init_solvcon.sh > /home/ubuntu/cloud-init-solvcon-output.log 2>&1'
