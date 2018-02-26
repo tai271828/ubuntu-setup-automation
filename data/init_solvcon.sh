@@ -13,7 +13,7 @@ if [[ `whoami` == "ubuntu" ]]; then
   wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /home/ubuntu/miniconda.sh
   bash ${HOME}/miniconda.sh -b -p ${HOME}/miniconda
 
-  SCSRC=${HOME}/solvcon
+  export SCSRC=${HOME}/solvcon
 
   export PATH="${HOME}/miniconda/bin:$PATH"
 
@@ -24,11 +24,10 @@ if [[ `whoami` == "ubuntu" ]]; then
   ${SCSRC}/contrib/devenv/create.sh
   source ${SCSRC}/build/env/start
   ${SCSRC}/contrib/conda.sh
+  ${SCSRC}/contrib/build-pybind11-in-conda.sh
 
-  pip install -U https://github.com/pybind/pybind11/archive/master.zip
-
+  cd ${SCSRC}
   python ${SCSRC}/setup.py build_ext --inplace
-
-  ${SCSRC}/nosetests --with-doctest -v
+  nosetests ${SCSRC} --with-doctest -v
  
 fi

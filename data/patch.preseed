@@ -68,6 +68,9 @@ ubiquity ubiquity/success_command string \
   in-target apt-get install -y --force-yes qemu-guest-agent; \
   in-target apt-get install -y --force-yes cloud-init; \
   in-target apt-get install -y --force-yes git; \
+# Specific to build SOLVCON
+  in-target apt-get install -y --force-yes build-essential; \
+  in-target apt-get install -y --force-yes liblapack-dev; \
   in-target apt-get install -y --force-yes vim; \
   sleep 15; \
   true
