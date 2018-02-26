@@ -16,7 +16,19 @@ if [[ `whoami` == "ubuntu" ]]; then
   SCSRC=${HOME}/solvcon
 
   export PATH="${HOME}/miniconda/bin:$PATH"
+
+  conda config --set always_yes yes --set changeps1 no
+  conda update -q conda
+  conda info -a
+
   ${SCSRC}/contrib/devenv/create.sh
   source ${SCSRC}/build/env/start
-  ${SCSRC}/contrib/conda.sh 
+  ${SCSRC}/contrib/conda.sh
+
+  pip install -U https://github.com/pybind/pybind11/archive/master.zip
+
+  python ${SCSRC}/setup.py build_ext --inplace
+
+  ${SCSRC}/nosetests --with-doctest -v
+ 
 fi
