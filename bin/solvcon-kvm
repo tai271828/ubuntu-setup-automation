@@ -2,6 +2,13 @@
 #
 # ./bin/solvcon-kvm
 #
+# This script is a wrapper of several scripts to
+#   - Download an Ubuntu image file.
+#   - Create a KVM domain
+#   - Install the Ubuntu image in the KVM domain
+#   - Install SOLVCON in the Ubuntu system installed in the KVM domain
+#
+
 SOLVCON_KVM_ROOT_DIR="$(dirname $(dirname $0))"
 
 function usage() {
