@@ -57,6 +57,7 @@ with password *passw0rd*, or your private key if you have pasted your public key
 After provisioning, you will get the files and folders shown below:
 
 | File/Folder | Description |
+| ----------- | ----------- |
 | solvcon | SOLVCON source code. It is pulled by git. |
 | miniconda | Miniconda environment. It is ready to run SOLVCON and enabled when you log in the guest system. |
 | cloud-init-solvcon-output.log | cloud-init output log when installing SOLVCON. If the installation completes, the log should show the unit test results. |
