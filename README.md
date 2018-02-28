@@ -53,3 +53,10 @@ Once the installation completes, it will pop up IP information to access the KVM
     ssh ubuntu@<The IP shown on stdout>
 
 with password *passw0rd*, or your private key if you have pasted your public key in [user-data](https://github.com/tai271828/ubuntu-setup-automation/blob/master/data/user-data).
+
+After provisioning, you will get the files and folders shown below:
+
+| File/Folder | Description |
+| solvcon | SOLVCON source code. It is pulled by git. |
+| miniconda | Miniconda environment. It is ready to run SOLVCON and enabled when you log in the guest system. |
+| cloud-init-solvcon-output.log | cloud-init output log when installing SOLVCON. If the installation completes, the log should show the unit test results. |
