@@ -7,18 +7,41 @@ An Ubuntu Xenial desktop with the following files/tools/scripts of the packages 
 - *libvirt.pc* (provided by *libvirt-dev*)
 - *Python.h* (provided by *libpython3.5-dev*)
 - *cloud-localds* (provided by *cloud-image-utils*)
+- *libvirt-python* (you may install it in your virtual env by *pip install libvirt-python*
 - optional: You may want to have *virt-manager* or *virt-viewer* in your system to see the provisioned system.
 
 ### Install the Prerequisites
+#### Debian Packages
 
     sudo apt-get install libvirt-dev
     sudo apt-get install libpython3.5-dev
     sudo apt-get install cloud-image-utils
 
-## Installing
+#### libvirt-python
+
+If your system does not provide libvirt-python package, you may want to install it by
 
     virtualenv -p python3 venv
+    source venv/bin/activate
+    pip install libvirt-python
+
+#### virt-manager
+
+    sudo apt-get install virt-manager
+
+For most normal users, you may want to add yourself into the libvirt group. Acheive it by
+
+    sudo adduser `id -un` libvirt
+
+## Installing Source
+
+Fetch the source. That's it!
+
     git clone https://github.com/tai271828/ubuntu-setup-automation.git
+
+Remember to activate the virtual environment if you have not done it
+
+    virtualenv -p python3 venv
     source venv/bin/activate
 
 If you want to connect the KVM system later over SSH, you need to paste your public ssh key in this session (replace *@@my_ssh_public_key@@* ). If you don't have a key or just want to use password to login, remove the whole session in order that cloud-init won't be confused by the invalid string *@@my_ssh_public_key@@*.
