@@ -44,9 +44,7 @@ Remember to activate the virtual environment if you have not done it
     virtualenv -p python3 venv
     source venv/bin/activate
 
-If you want to connect the KVM system later over SSH, you need to paste your public ssh key in this session (replace *@@my_ssh_public_key@@* ). If you don't have a key or just want to use password to login, remove the whole session in order that cloud-init won't be confused by the invalid string *@@my_ssh_public_key@@*.
-
-Change or remove this part of [user-data](https://github.com/tai271828/ubuntu-setup-automation/blob/master/data/user-data)
+If you want to connect the KVM system later over SSH, you need to paste your public ssh key [user-data](https://github.com/tai271828/ubuntu-setup-automation/blob/master/data/user-data)
 
     ssh_authorized_keys:
      - @@my_ssh_public_key@@
