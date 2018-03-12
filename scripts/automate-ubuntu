@@ -11,7 +11,7 @@ MIRROR_HOSTNAME=${MIRROR_HOSTNAME:-releases.ubuntu.com}
 MIRROR_DIRECTORY=${MIRROR_DIRECTORY:-/releases}
 MIRROR_PREFIX="http://${MIRROR_HOSTNAME}${MIRROR_DIRECTORY}"
 
-DEFAULT_RELEASE="14.04.5"
+DEFAULT_RELEASE="16.04.1"
 DEFAULT_TYPE="desktop"
 DEFAULT_ARCHITECTURE="amd64"
 
@@ -113,6 +113,15 @@ else
   wget -q -O $tempd/${iso_name} $iso_download_url
   if [[ "$?" -ne 0 ]]; then
     echo_message "Failed to download the image from ${iso_download_url}"
+    mirror_hostname_old="old-releases.ubuntu.com"
+    mirror_prefix="http://${mirror_hostname_old}${MIRROR_DIRECTORY}"
+    iso_download_url=${mirror_prefix}/${RELEASE}/${iso_name}
+    echo_message "Now try ${iso_download_url}"
+    wget -q -O $tempd/${iso_name} $iso_download_url
+  fi
+  if [[ "$?" -ne 0 ]]; then
+    echo_message "Failed to download the image from ${iso_download_url}"
+    echo_message "Give up."
     exit
   fi
   echo_message "${iso_download_url} is downloaded under ${tempd}"
