@@ -25,8 +25,8 @@ d-i console-setup/ask_detect boolean false
 d-i console-setup/layoutcode string us
 
 # Network
-d-i netcfg/get_hostname string solvcon-master
-d-i netcfg/get_domain string solvcon-domain
+d-i netcfg/get_hostname string ubuntu-master
+d-i netcfg/get_domain string ubuntu-domain
 d-i netcfg/choose_interface select auto
 
 # Clock
