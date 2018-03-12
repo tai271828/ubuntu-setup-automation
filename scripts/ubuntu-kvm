@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# ./bin/solvcon-kvm
+# ./ubuntu-kvm
 #
 # This script is a wrapper of several scripts to
 #   - Download an Ubuntu image file.
@@ -9,7 +9,7 @@
 #   - Install SOLVCON in the Ubuntu system installed in the KVM domain
 #
 
-SOLVCON_KVM_ROOT_DIR="$(dirname $(dirname $0))"
+SOLVCON_KVM_ROOT_DIR="$(dirname $0)"
 
 function usage() {
   local usage="Usage: `basename $0` [-c cache]"
@@ -37,10 +37,9 @@ if [[ -n "$help" ]]; then
   usage
   exit
 fi
+pushd ${SOLVCON_KVM_ROOT_DIR} > /dev/null
 
-pushd ${SOLVCON_KVM_ROOT_DIR}/scripts > /dev/null
-
-write-mime-multipart --output=/tmp/user-data-combined ../data/init_solvcon.sh:text/x-shellscript ../data/user-data
+write-mime-multipart --output=/tmp/user-data-combined ./data/init_solvcon.sh:text/x-shellscript ./data/user-data
 cloud-localds /tmp/my-seed.img /tmp/user-data-combined
 sudo cp /tmp/my-seed.img /var/lib/libvirt/images/
 
@@ -52,6 +51,6 @@ else
   sudo ./prepare-kvm-deployment -c $CACHE
 fi
 
-../bin/create-instance-kvm
+./create-instance-kvm
 
 popd > /dev/null
