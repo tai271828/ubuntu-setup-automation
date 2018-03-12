@@ -12,7 +12,7 @@
 UBUNTU_KVM_ROOT_DIR="$(dirname $0)"
 
 function usage() {
-  local usage="Usage: `basename $0` [-c cache]"
+  local usage="Usage: `basename $0` [-c cache] [-u user_data]"
   echo $usage
   exit
 }
@@ -23,6 +23,11 @@ while [[ $# -gt 0  ]]; do
     -c|--cache)
     CACHE=$2
     readonly CACHE
+    shift
+    ;;
+    -u|--userdata)
+    USERDATA=$2
+    readonly USERDATA
     shift
     ;;
     -h|--help)
@@ -37,9 +42,13 @@ if [[ -n "$help" ]]; then
   usage
   exit
 fi
+
+
+USERDATA=${USERDATA:="./data/init_generic.sh"}
+
 pushd ${UBUNTU_KVM_ROOT_DIR} > /dev/null
 
-write-mime-multipart --output=/tmp/user-data-combined ./data/init_solvcon.sh:text/x-shellscript ./data/user-data
+write-mime-multipart --output=/tmp/user-data-combined ${USERDATA}:text/x-shellscript ./data/user-data
 cloud-localds /tmp/my-seed.img /tmp/user-data-combined
 sudo cp /tmp/my-seed.img /var/lib/libvirt/images/
 
