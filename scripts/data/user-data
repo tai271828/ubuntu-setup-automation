@@ -9,5 +9,5 @@ ssh_authorized_keys:
 timezone: Asia/Taipei
 
 runcmd:
- - chmod 777 bash /var/lib/cloud/instances/iid-local01/scripts/init_solvcon.sh
- - su - ubuntu -c 'bash /var/lib/cloud/instances/iid-local01/scripts/init_solvcon.sh > /home/ubuntu/cloud-init-solvcon-output.log 2>&1'
+ - chmod 777 bash /var/lib/cloud/instances/iid-local01/scripts/init_generic.sh
+ - su - ubuntu -c 'bash /var/lib/cloud/instances/iid-local01/scripts/init_generic.sh > /home/ubuntu/cloud-init-userdata-output.log 2>&1'
