@@ -2,40 +2,63 @@
 import xml.dom.minidom
 import uuid
 import posixpath
+import configparser
 
-name_target='maas-node-01'
-uuid_target=str(uuid.uuid1())
 
-dom = xml.dom.minidom.parse('data/maas-node.xml')
+configp = configparser.ConfigParser()
+configp.read('data/maas-node.ini')
+conf_section_mnode = configp['MaaSNodes']
+name_prefix = conf_section_mnode['Prefix']
+name_suffix_lz = conf_section_mnode['SuffixLeadingZero']
+name_suffix_lz_offset = conf_section_mnode['SuffixLeadingZeroOffset']
+name_id_offset = conf_section_mnode['IdOffset']
+duplicate = conf_section_mnode['Duplicate']
+xmltemplate = conf_section_mnode['XmlTemplate']
 
-domain_ele = dom.getElementsByTagName('domain')[0]
-if isinstance(domain_ele, xml.dom.minidom.Element):
-    domain_ele.setAttribute('id', '10')
 
-name_ele = dom.getElementsByTagName('name')[0]
-name_node = name_ele.childNodes[0]
-name_node.data = name_target
+def dumpxml(xmltemplate, name_target, domain_id):
+    dom = xml.dom.minidom.parse(xmltemplate)
 
-uuid_ele = dom.getElementsByTagName('uuid')[0]
-uuid_node = uuid_ele.childNodes[0]
-uuid_node.data = uuid_target
+    name_ele = dom.getElementsByTagName('name')[0]
+    name_node = name_ele.childNodes[0]
+    name_node.data = name_target
 
-disk_ele = dom.getElementsByTagName('disk')[0]
-source_ele = disk_ele.childNodes[3]
-if isinstance(source_ele, xml.dom.minidom.Element):
-    qcow2_file = source_ele.getAttribute('file')
-qcow2_dir = posixpath.dirname(qcow2_file)
-qcow2_file = posixpath.join(qcow2_dir, name_target + '.qcow2')
-source_ele.setAttribute('file', qcow2_file)
+    domain_ele = dom.getElementsByTagName('domain')[0]
+    if isinstance(domain_ele, xml.dom.minidom.Element):
+        domain_ele.setAttribute('id', domain_id)
 
-sec_eles = dom.getElementsByTagName('seclabel')
-for ele in sec_eles:
-    nodes = ele.childNodes
-    for node in nodes:
-        if isinstance(node, xml.dom.minidom.Element):
-            sub_node = node.childNodes[0]
-            sub_node.data = "libvirt" + uuid_target
+    uuid_target = str(uuid.uuid1())
+    uuid_ele = dom.getElementsByTagName('uuid')[0]
+    uuid_node = uuid_ele.childNodes[0]
+    uuid_node.data = uuid_target
 
-output_xml = open(name_target + '.xml', 'w')
-dom.writexml(output_xml)
-output_xml.close()
+    disk_ele = dom.getElementsByTagName('disk')[0]
+    source_ele = disk_ele.childNodes[3]
+    if isinstance(source_ele, xml.dom.minidom.Element):
+        qcow2_file = source_ele.getAttribute('file')
+    qcow2_dir = posixpath.dirname(qcow2_file)
+    qcow2_file = posixpath.join(qcow2_dir, name_target + '.qcow2')
+    source_ele.setAttribute('file', qcow2_file)
+
+    sec_eles = dom.getElementsByTagName('seclabel')
+    for ele in sec_eles:
+        nodes = ele.childNodes
+        for node in nodes:
+            if isinstance(node, xml.dom.minidom.Element):
+                sub_node = node.childNodes[0]
+                sub_node.data = "libvirt" + uuid_target
+
+    output_xml = open(name_target + '.xml', 'w')
+    dom.writexml(output_xml)
+    output_xml.close()
+
+for name_suffix_counter in range(int(name_suffix_lz_offset), int(name_suffix_lz_offset) + int(duplicate)):
+    # leading zero wildcard
+    name_suffix_lz_wc = '%0' + name_suffix_lz + 'd'
+    name_suffix_start = name_suffix_counter
+    name_suffix = name_suffix_lz_wc % name_suffix_start
+
+    domain_id = str(int(name_id_offset) + name_suffix_counter)
+
+    name_target = name_prefix + '-' + name_suffix
+    dumpxml(xmltemplate, name_target, domain_id)
