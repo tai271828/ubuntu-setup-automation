@@ -46,7 +46,7 @@ def dumpxml(xmltemplate, name_target, domain_id):
         for node in nodes:
             if isinstance(node, xml.dom.minidom.Element):
                 sub_node = node.childNodes[0]
-                sub_node.data = "libvirt" + uuid_target
+                sub_node.data = uuid_target
 
     output_xml = open(name_target + '.xml', 'w')
     dom.writexml(output_xml)
